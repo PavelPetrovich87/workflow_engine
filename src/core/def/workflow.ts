@@ -116,7 +116,9 @@ export const WorkflowStateSchema = z.object({
     error: z.string().optional(),
     output: DataValueSchema.optional().describe('The result data produced by the node'),
   })).describe('Tracks the state of every individual node'),
-  context: z.record(DataValueSchema).describe('Shared global memory for the workflow (Variables)'),
+    context: z.record(DataValueSchema).and(z.object({
+        env: z.record(z.string()).optional().describe('Runtime environment variables (e.g. API Keys)'),
+    })).describe('Shared global memory for the workflow (Variables)'),
 });
 
 export type WorkflowState = z.infer<typeof WorkflowStateSchema>;
