@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@types/dagre": "^0.7.53",
+    "ajv": "^8.17.1",
     "dagre": "^0.8.5",
     "lucide-react": "^0.400.0",
     "react": "^18.3.1",

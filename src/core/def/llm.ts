@@ -15,6 +15,28 @@ export const LlmConfigSchema = z.object({
 
 export type LlmConfig = z.infer<typeof LlmConfigSchema>;
 
+// --- GENERATION NODE TYPES ---
+
+export interface LlmGenerationConfig extends LlmConfig {
+  model?: string;
+  temperature?: number;
+  systemInstruction?: string;
+}
+
+export interface LlmGenerationInput {
+  prompt: string;
+}
+
+export interface LlmGenerationOutput {
+  result: string;
+}
+
+export const LlmGenerationConfigSchema = LlmConfigSchema.extend({
+  model: z.string().optional(),
+  temperature: z.number().min(0).max(1).optional(),
+  systemInstruction: z.string().optional(),
+});
+
 /**
  * 📦 LlmResponse
  * Standardized output format for any LLM Generation node.

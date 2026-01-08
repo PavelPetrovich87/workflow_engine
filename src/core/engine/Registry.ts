@@ -1,5 +1,8 @@
 import { Node, WorkflowState } from '../def/workflow';
 import { MockLlmStrategy } from './ai/MockLlmStrategy';
+import { LlmGenerationStrategy } from './ai/LlmGenerationStrategy';
+import { LlmExtractStrategy } from './ai/LlmExtractStrategy';
+import { PromptTemplateStrategy } from './ai/PromptTemplateStrategy';
 
 /**
  * 🕵️‍♂️ PROFESSOR NOTES: THE STRATEGY PATTERN
@@ -115,6 +118,9 @@ class Registry {
     this.register('javascript', new JavaScriptStrategy());
     this.register('json-parse', new JsonParseStrategy());
     this.register('mock-llm', new MockLlmStrategy());
+    this.register('llm-generation', new LlmGenerationStrategy());
+    this.register('llm-extract', new LlmExtractStrategy());
+    this.register('prompt-template', new PromptTemplateStrategy());
   }
 
   register(type: string, strategy: NodeExecutionStrategy) {
@@ -132,5 +138,7 @@ class Registry {
 
 // Export a single instance
 export const nodeRegistry = new Registry();
-export { Node };
+
+export type { Node, WorkflowState };
+
 
