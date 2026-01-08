@@ -131,4 +131,42 @@ export class WorkflowEngine {
           }
       }
   }
+
+
+  /**
+   * Reset the engine state to initial values.
+   */
+  public async reset() {
+    if (!this.pipeline) return;
+
+    // 1. Stop current execution if running
+    // The Scheduler holds a reference to the OLD state object.
+    // By mutating it here, we signal the loop to stop.
+    if (this.state && this.state.status === 'RUNNING') {
+      this.state.status = 'IDLE';
+    }
+
+    // 2. Create Fresh State
+    this.state = {
+      executionId: crypto.randomUUID(),
+      pipelineId: this.pipeline.id,
+      status: 'IDLE',
+      context: {},
+      nodeStates: {},
+    };
+
+    // Initialize all nodes to IDLE
+    this.pipeline.nodes.forEach(node => {
+      this.state!.nodeStates[node.id] = { status: 'IDLE' };
+    });
+
+    this.emitChange();
+
+    // Clear persistence
+    if (this.persistence) {
+      // We might want to clear the saved state entirely
+      // For now, saving the IDLE state effectively resets it on reload too
+      await this.persistence.save(this.state);
+    }
+  }
 }

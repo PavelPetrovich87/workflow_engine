@@ -61,6 +61,7 @@ export function useWorkflow(pipeline: Pipeline) {
   return {
     state,
     start,
+    reset: () => engine.reset(),
     engine 
   };
 }
