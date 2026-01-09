@@ -46,7 +46,7 @@ export const StatusNode = memo(({ data, selected }: NodeProps<StatusNodeData>) =
   const style = variants[status];
 
   return (
-    <div className={`px-4 py-3 rounded-lg border-2 shadow-lg min-w-[150px] transition-all duration-300 ${style.border} ${style.bg} ${selected ? 'ring-2 ring-white/20' : ''}`}>
+    <div className={`px-4 py-3 rounded-lg border-2 shadow-lg min-w-[150px] transition-all duration-300 cursor-pointer ${style.border} ${style.bg} ${selected ? 'ring-2 ring-white/20' : ''}`}>
       {/* Inputs */}
       <Handle type="target" position={Position.Top} className="!bg-slate-400 !w-3 !h-3" />
       

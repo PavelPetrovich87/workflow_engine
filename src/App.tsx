@@ -60,12 +60,6 @@ function App() {
 
       <main className="max-w-6xl mx-auto">
         <WorkflowCanvas pipeline={demoPipeline} state={state} />
-
-        {/* Debug View */}
-        <div className="mt-8 p-6 bg-slate-900 rounded-xl border border-slate-800 font-mono text-xs text-slate-400 overflow-x-auto">
-          <h3 className="text-sm font-bold text-slate-300 mb-4">Live State (JSON)</h3>
-          <pre>{JSON.stringify(state, null, 2)}</pre>
-        </div>
       </main>
     </div>
   );

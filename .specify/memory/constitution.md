@@ -26,6 +26,13 @@ All code MUST be written in strict TypeScript. The use of `any` is prohibited un
 <!-- Example: III. Test-First (NON-NEGOTIABLE) -->
 State changes MUST follow a unidirectional data flow pattern (Action -> Reducer/Store -> State -> View). Direct mutation of state objects outside of designated actions is strictly forbidden. This ensures state predictability and simplifies debugging (time-travel debugging, logging).
 
+### IV. Visualization Standard
+<!-- Example: IV. Framework Selection -->
+All flow-based UI visualizations MUST use `React Flow` (`@xyflow/react`).
+- **Standard Features**: Implementations MUST utilize standard `Background`, `Controls`, and `MiniMap` components to ensure a consistent user experience.
+- **Basic Usage**: Prefer standard nodes, edges, and handles over custom implementations unless specific business logic requires it.
+- **Documentation**: Refer to [React Flow Documentation](https://reactflow.dev) for usage patterns.
+
 ## Architectural Constraints
 <!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 

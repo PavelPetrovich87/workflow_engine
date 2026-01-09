@@ -23,10 +23,11 @@ npm test && npm run lint
 TypeScript 5.x: Follow standard conventions
 
 ## Recent Changes
+- 004-node-ui: Added Interactive Node UI (NodeModal, interactive StatusNode) and migrated to Tailwind CSS v4.
+- 002-nodes-UI: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 - 001-llm-generation: Added TypeScript 5.x + `src/core/engine/ai/BaseLlmStrategy.ts`, `src/core/engine/Registry.ts`
 - 001-llm-generation: Added TypeScript 5.x + `src/core/engine/ai/BaseLlmStrategy.ts`, `src/core/engine/Registry.ts`
 
-- 001-llm-generation: Added TypeScript 5.x + `src/core/engine/ai/BaseLlmStrategy.ts`, `src/core/engine/Registry.ts`
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

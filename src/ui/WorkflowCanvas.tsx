@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import ReactFlow, { 
     Background, 
     Controls, 
@@ -8,10 +8,11 @@ import ReactFlow, {
     Node,
     ConnectionLineType
 } from 'reactflow';
-import dagre from 'dagre';
+import * as dagre from 'dagre';
 import 'reactflow/dist/style.css';
 import { Pipeline, WorkflowState } from '../core/def/workflow';
 import { StatusNode } from './StatusNode';
+import { NodeModal } from './NodeModal';
 
 // Define custom node types
 const nodeTypes = {
@@ -31,6 +32,11 @@ type WorkflowCanvasProps = {
 export function WorkflowCanvas({ pipeline, state }: WorkflowCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+  }, []);
 
   // 1. Auto Layout Helper (Dagre)
   const getLayoutedElements = useCallback((pipelineNodes: any[], pipelineEdges: any[]) => {
@@ -139,10 +145,17 @@ export function WorkflowCanvas({ pipeline, state }: WorkflowCanvasProps) {
         minZoom={0.5}
         maxZoom={1.5}
         proOptions={{ hideAttribution: true }}
+        onNodeClick={onNodeClick}
       >
         <Background color="#334155" gap={16} />
         <Controls className="bg-slate-800 border-slate-700 text-white fill-white" />
       </ReactFlow>
+
+      <NodeModal
+        node={selectedNode}
+        isOpen={!!selectedNode}
+        onClose={() => setSelectedNode(null)}
+      />
     </div>
   );
 }
