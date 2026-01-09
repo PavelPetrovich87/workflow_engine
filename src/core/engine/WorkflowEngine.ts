@@ -42,8 +42,16 @@ export class WorkflowEngine {
 
   private emitChange() {
     if (this.state) {
+      // 🚨 FIX: React won't re-render if we pass the same object reference.
+      // We must create a shallow clone of the state.
+      const freshState: WorkflowState = {
+        ...this.state,
+        nodeStates: { ...this.state.nodeStates },
+        context: { ...this.state.context }
+      };
+
       // 1. Notify UI
-      this.listeners.forEach(l => l(this.state!));
+      this.listeners.forEach(l => l(freshState));
       
       // 2. Persist State (Fire & Forget)
       if (this.persistence) {
