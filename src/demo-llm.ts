@@ -1,6 +1,7 @@
 
 import { WorkflowEngine } from './core/engine/WorkflowEngine';
 import { Pipeline } from './core/def/workflow';
+import { ENV_GEMINI_API_KEY, ENV_GEMINI_MODEL } from './core/def/llm';
 
 async function runLlmDemo() {
   console.log('🧠 Starting LLM Generation Node Demo...');
@@ -34,9 +35,25 @@ async function runLlmDemo() {
         type: 'llm-generation',
         label: 'Write Haiku',
         config: {
-            apiKey: 'mock-key',
+          apiKey: 'mock-key',
             model: 'gemini-flash',
             temperature: 0.9
+        }
+      },
+      {
+        id: 'extractor',
+        type: 'llm-extract',
+        label: 'Extract Keywords',
+        config: {
+          apiKey: 'mock-key',
+          schema: {
+            type: 'object',
+            properties: {
+              keywords: { type: 'array', items: { type: 'string' } },
+              is_poetic: { type: 'boolean' }
+            },
+            required: ['keywords']
+          }
         }
       },
       {
@@ -49,7 +66,8 @@ async function runLlmDemo() {
     edges: [
       { id: 'e1', source: 'injector', target: 'mapper' },
       { id: 'e2', source: 'mapper', target: 'poet' },
-      { id: 'e3', source: 'poet', target: 'end' }
+      { id: 'e3', source: 'poet', target: 'extractor' },
+      { id: 'e4', source: 'extractor', target: 'end' }
     ]
   };
 

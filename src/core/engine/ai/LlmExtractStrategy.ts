@@ -3,6 +3,7 @@ import { BaseLlmStrategy } from './BaseLlmStrategy';
 import { Node } from '../Registry';
 import { WorkflowState } from '../../def/workflow';
 import { LlmConfig, LlmConfigSchema, LlmError } from '../../def/llm';
+import { GoogleGenAI } from '@google/genai';
 
 export interface ExtractionConfig extends LlmConfig {
   /**
@@ -45,9 +46,10 @@ export class LlmExtractStrategy extends BaseLlmStrategy {
       }
 
       // 2. Prepare Input Text
-      const textToExtract = input.text;
+      // Support 'text' (custom) or 'result' (standard output from llm-generation)
+      const textToExtract = input.text || input.result;
       if (!textToExtract || typeof textToExtract !== 'string') {
-        throw new Error('Missing "text": Input must be a string.');
+        throw new Error('Missing "text" or "result": Input must be a string.');
       }
 
       // 3. Construct Prompt
@@ -105,21 +107,54 @@ export class LlmExtractStrategy extends BaseLlmStrategy {
       // 3. Validate
       
       const apiKey = this.getApiKey(node, context); // checks auth
-      await this.simulateDelay(500);
+      // await this.simulateDelay(500); // Removed artificial delay
 
-      // MOCK LLM RESULT for demonstration (since no real provider SDK installed yet)
-      // In a real generic node, we'd fetch https://generativelanguage.googleapis.com...
-      const mockResult = {
-        name: "Extracted Name",
-        date: "2024-01-01"
-      }; 
-      // Use the mock result, but allow passing "outcome" in input for testing if needed?
-      // No, for the "Implementation", I'll put a TODO for the real API call 
-      // and focus on the AJV validation part which IS the feature.
+      let llmOutput: any;
+
+      // MOCK LLM RESULT for demonstration
+      if (apiKey === 'mock-key' || !apiKey) {
+        console.warn('⚠️ LlmExtractStrategy: Using Mock Extraction.');
+
+        // Generate a mock object that roughly matches the schema
+        // This is a simplified fallback; for complex schemas, it might still fail AJV
+        llmOutput = {};
+        if (schema.properties) {
+          Object.keys(schema.properties).forEach(key => {
+            const prop = schema.properties[key];
+            if (prop.type === 'array') llmOutput[key] = ["mock-item-1", "mock-item-2"];
+            else if (prop.type === 'number') llmOutput[key] = 42;
+            else if (prop.type === 'boolean') llmOutput[key] = true;
+            else llmOutput[key] = `Mock ${key}`;
+          });
+        }
+      } else {
+        // Official SDK Implementation
+        const ai = new GoogleGenAI({ apiKey });
+
+        // Use Global Model or default to flash
+        const modelName = baseConfig.model || 'gemini-1.5-flash';
+
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: [
+            { role: 'user', parts: [{ text: systemPrompt + '\n\n' + userPrompt }] }
+          ],
+          config: {
+            responseMimeType: 'application/json',
+            temperature: 0
+          }
+        });
+
+        const text = response.text();
+        if (!text) throw new Error('Empty response from Gemini');
+        try {
+          llmOutput = JSON.parse(text);
+        } catch (e) {
+          throw new Error('Failed to parse JSON response: ' + text);
+        }
+      }
       
-      let llmOutput = mockResult; 
-      
-      // 5. Validate Output with MJV
+      // 5. Validate Output with AJV
       const validate = this.ajv.compile(schema);
       const valid = validate(llmOutput);
 

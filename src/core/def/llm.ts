@@ -13,6 +13,13 @@ export const LlmConfigSchema = z.object({
   apiKey: z.string().optional().describe('Override API key for this specific node'), // Can be overridden per node
 });
 
+/**
+ * 🌍 Global Environment Keys
+ * Use these keys in `WorkflowState.context.items` to pass global config.
+ */
+export const ENV_GEMINI_API_KEY = 'ENV_GEMINI_API_KEY';
+export const ENV_GEMINI_MODEL = 'ENV_GEMINI_MODEL';
+
 export type LlmConfig = z.infer<typeof LlmConfigSchema>;
 
 // --- GENERATION NODE TYPES ---

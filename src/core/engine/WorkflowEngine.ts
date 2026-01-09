@@ -100,6 +100,7 @@ export class WorkflowEngine {
 
     // 3. Kick off the Tick Loop
     try {
+      console.log('[WorkflowEngine] Starting with Context:', this.state?.context);
       await this.scheduler.tick();
     } catch (error: any) {
       console.error('Workflow Failed:', error);
