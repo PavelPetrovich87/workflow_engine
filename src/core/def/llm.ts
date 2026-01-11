@@ -7,10 +7,11 @@ import { z } from 'zod';
  * This can be mixed into the `node.config` or provided via `node.data` overrides.
  */
 export const LlmConfigSchema = z.object({
-  model: z.string().default('gemini-flash').describe('The Model ID to use (e.g., gpt-4, gemini-pro)'),
+  apiProvider: z.enum(['gemini', 'openrouter']).default('gemini').describe('LLM Provider'),
+  model: z.string().default('gemini-2.0-flash').describe('The Model ID to use'),
   temperature: z.number().min(0).max(1).default(0.7).describe('Creativity control (0.0 = deterministic, 1.0 = creative)'),
   maxTokens: z.number().optional().describe('Hard limit on output tokens'),
-  apiKey: z.string().optional().describe('Override API key for this specific node'), // Can be overridden per node
+  apiKey: z.string().optional().describe('Override API key for this specific node'),
 });
 
 /**
@@ -18,6 +19,7 @@ export const LlmConfigSchema = z.object({
  * Use these keys in `WorkflowState.context.items` to pass global config.
  */
 export const ENV_GEMINI_API_KEY = 'ENV_GEMINI_API_KEY';
+export const ENV_OPENROUTER_API_KEY = 'ENV_OPENROUTER_API_KEY';
 export const ENV_GEMINI_MODEL = 'ENV_GEMINI_MODEL';
 
 export type LlmConfig = z.infer<typeof LlmConfigSchema>;

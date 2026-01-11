@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 export interface LlmGlobalConfig {
   apiKey: string;
   model: string;
+  apiProvider: 'gemini' | 'openrouter';
 }
 
 const STORAGE_KEY = 'workflow_engine_llm_config';
@@ -11,6 +12,7 @@ const STORAGE_KEY = 'workflow_engine_llm_config';
 const DEFAULT_CONFIG: LlmGlobalConfig = {
   apiKey: '',
   model: 'gemini-1.5-flash',
+  apiProvider: 'gemini',
 };
 
 const EVENT_KEY = 'llm-config-updated';

@@ -35,6 +35,20 @@ export abstract class BaseLlmStrategy implements NodeExecutionStrategy {
     // 2. Context env (Runtime injection from UI Global Config)
     // We check `context.items` for standard keys defined in `llm.ts`
     // We also support the legacy `context.env` for backward compatibility
+    // 2. Context env (Runtime injection from UI Global Config)
+    // We check `context.items` for standard keys defined in `llm.ts`
+    // We also support the legacy `context.env` for backward compatibility
+
+    // Check provider-specific keys first if provider is known from config
+    const provider = node.config?.apiProvider;
+    if (provider === 'openrouter') {
+      if (context.items?.ENV_OPENROUTER_API_KEY) return String(context.items.ENV_OPENROUTER_API_KEY);
+      // Fallback for dev/process env
+      // @ts-ignore
+      const viteEnvOr = typeof import.meta !== 'undefined' && import.meta.env?.VITE_OPENROUTER_API_KEY;
+      if (viteEnvOr) return viteEnvOr;
+    }
+
     if (context.items?.ENV_GEMINI_API_KEY) {
       return String(context.items.ENV_GEMINI_API_KEY);
     }

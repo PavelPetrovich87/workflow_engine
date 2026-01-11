@@ -22,7 +22,7 @@ export class LlmGenerationStrategy extends BaseLlmStrategy {
              throw new Error('Input must contain a "prompt" string');
         }
 
-        console.log(`🧠 LLM Generating... Model=${config.model}, Temp=${config.temperature}`);
+        console.log(`🧠 LLM Generating... Model=${config.model}, Temp=${config.temperature}, Provider=${config.apiProvider}`);
 
         // Mock mode check (for testing/demo without keys)
         if (apiKey === 'mock-key' || !apiKey) {
@@ -31,6 +31,39 @@ export class LlmGenerationStrategy extends BaseLlmStrategy {
         }
 
         try {
+            if (config.apiProvider === 'openrouter') {
+                console.log('🚀 Using OpenRouter API');
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': 'http://localhost:5173', // Optional
+                        'X-Title': 'Workflow Engine', // Optional
+                    },
+                    body: JSON.stringify({
+                        model: config.model,
+                        messages: [
+                            { role: 'user', content: prompt }
+                        ],
+                        temperature: config.temperature,
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`OpenRouter API Error: ${response.status} ${JSON.stringify(errorData)}`);
+                }
+
+                const data = await response.json();
+                const text = data.choices?.[0]?.message?.content;
+
+                if (!text) throw new Error('Empty response from OpenRouter');
+                return { result: text };
+
+            }
+
+            // Default: Gemini
             const ai = new GoogleGenAI({ apiKey });
 
             const response = await ai.models.generateContent({

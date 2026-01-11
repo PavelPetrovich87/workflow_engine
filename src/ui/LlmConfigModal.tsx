@@ -12,6 +12,7 @@ export function LlmConfigModal({ isOpen, onClose }: LlmConfigModalProps) {
   const { config, saveConfig } = useLlmConfig();
   const [apiKey, setApiKey] = useState(config.apiKey);
   const [model, setModel] = useState(config.model);
+  const [apiProvider, setApiProvider] = useState<'gemini' | 'openrouter'>(config.apiProvider || 'gemini');
   const [isSaved, setIsSaved] = useState(false);
 
   // Sync state when modal opens or config updates elsewhere
@@ -19,12 +20,13 @@ export function LlmConfigModal({ isOpen, onClose }: LlmConfigModalProps) {
     if (isOpen) {
       setApiKey(config.apiKey);
       setModel(config.model);
+      setApiProvider(config.apiProvider || 'gemini');
       setIsSaved(false);
     }
   }, [isOpen, config]);
 
   const handleSave = () => {
-      saveConfig({ apiKey, model });
+    saveConfig({ apiKey, model, apiProvider });
       setIsSaved(true);
       setTimeout(() => {
           setIsSaved(false);
@@ -53,14 +55,42 @@ export function LlmConfigModal({ isOpen, onClose }: LlmConfigModalProps) {
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          <div className="space-y-2">
+          <div className="space-y-6">
+            {/* Provider Selector */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-400">
+                AI Provider
+              </label>
+              <div className="flex gap-2 p-1 bg-slate-950 rounded-lg border border-slate-700">
+                <button
+                  onClick={() => setApiProvider('gemini')}
+                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${apiProvider === 'gemini'
+                    ? 'bg-indigo-600 text-white shadow-lg'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                    }`}
+                >
+                  Google Gemini
+                </button>
+                <button
+                  onClick={() => setApiProvider('openrouter')}
+                  className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${apiProvider === 'openrouter'
+                    ? 'bg-indigo-600 text-white shadow-lg'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                    }`}
+                >
+                  OpenRouter
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
             <label className="text-sm font-medium text-slate-400 flex items-center gap-2">
               <Key className="w-4 h-4" />
-              Gemini API Key
+                {apiProvider === 'gemini' ? 'Gemini API Key' : 'OpenRouter API Key'}
             </label>
             <input 
               type="password"
-              placeholder="AIzaSy..."
+                placeholder={apiProvider === 'gemini' ? "AIzaSy..." : "sk-or-..."}
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               className="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm placeholder:text-slate-600"
@@ -72,19 +102,30 @@ export function LlmConfigModal({ isOpen, onClose }: LlmConfigModalProps) {
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-400">
-              Default Model
+                {apiProvider === 'gemini' ? 'Default Model' : 'Model ID'}
             </label>
-            <select 
-              className="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-            >
-              <option value="gemini-2.0-flash">Gemini 2.0 Flash (New)</option>
-              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-              <option value="gemini-3-flash-preview">Gemini 3.0 Flash Preview</option>
-              <option value="gemini-3-pro-preview">Gemini 3.0 Pro Preview</option>
-            </select>
+              {apiProvider === 'gemini' ? (
+                <select
+                  className="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                >
+                  <option value="gemini-2.0-flash">Gemini 2.0 Flash (New)</option>
+                  <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                  <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                  <option value="gemini-3-flash-preview">Gemini 3.0 Flash Preview</option>
+                  <option value="gemini-3-pro-preview">Gemini 3.0 Pro Preview</option>
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  placeholder="e.g. google/gemma-7b-it:free"
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  className="w-full px-4 py-2 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm placeholder:text-slate-600"
+                />
+              )}
+            </div>
           </div>
         </div>
 
